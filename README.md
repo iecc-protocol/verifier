@@ -4,7 +4,7 @@
 [![Cryptographic Standard: Ed25519](https://img.shields.io/badge/Security-Ed25519-blue.svg)](#technical-specifications)
 [![Audit: Open Source](https://img.shields.io/badge/Audit-Public-success.svg)](#why-this-exists)
  
-The IECC Verifier is a lightweight, client-side cryptographic tool designed to validate **digital credentials**, **professional certificates**, and **verifiable achievements** issued through the IECC Network (**Independent Credential Infrastructure**) and maintained by the **IECC Consortium**.
+The IECC Verifier is a lightweight, client-side cryptographic tool designed to validate **digital credentials**, **professional certificates**, and **verifiable achievements** issued through the [IECC Network](https://iecc.world) (**Independent Credential Infrastructure**) and maintained by the [IECC Consortium](https://iecc.world).
 
 This repository intentionally open-sources **verification only** (public audit / public trust). Issuance, rate-limits, risk controls, and private key operations remain server-side.
 
