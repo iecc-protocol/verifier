@@ -1,6 +1,9 @@
 import * as ed from '@noble/ed25519';
 import { sha512 } from '@noble/hashes/sha512';
+import { verifyMerkleProof, generateMerkleRoot } from './merkle.js';
+import { resolveDID, auditBatch } from './advanced.js';
 import trustedIssuers from '../trusted-issuers.json' assert { type: 'json' };
+import canonize from 'json-canon';
 
 // Required for @noble/ed25519 to work in environments without global crypto
 if (typeof crypto !== 'undefined' && !ed.etc.sha512Sync) {
@@ -20,6 +23,7 @@ export interface VerificationResult {
   issuer?: string;
   timestamp?: number;
   data?: CredentialData;
+  merkleVerified?: boolean;
   error?: string;
 }
 
@@ -49,7 +53,11 @@ export async function verifyCredential(
       return { isValid: false, error: 'Public key does not match registered issuer key' };
     }
 
-    const isValid = await ed.verify(signatureHex, rawPayload, publicKeyHex);
+    const canonicalPayload = typeof rawPayload === 'string' 
+      ? canonize(JSON.parse(rawPayload)) 
+      : canonize(rawPayload);
+
+    const isValid = await ed.verify(signatureHex, canonicalPayload, publicKeyHex);
 
     return {
       isValid: true,

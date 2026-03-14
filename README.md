@@ -21,6 +21,7 @@ In an era of digital forgery, static PDFs are no longer sufficient for professio
 
 - **Zero-Knowledge Verification**: Validate credentials without accessing central databases.
 - **Ed25519 Signature Scheme**: Industry-standard Edwards-curve Digital Signature Algorithm for high security and performance.
+- **Merkle Tree Anchoring**: Support for batch verification and proof-of-existence against public immutable logs.
 - **SHA-256 Integrity**: Ensures the certificate content hasn't been tampered with.
 - **Portable & Lightweight**: No heavy dependencies, runs in any modern browser or Node.js environment.
 
@@ -62,12 +63,28 @@ For dev-ops and batch auditing:
 npx iecc-verify ./cert.json <signature> <pubkey>
 ```
 
+### 4. Merkle Proof Verification (High-Trust)
+For enterprise auditing of batch-issued certificates.
+
+```typescript
+import { verifyMerkleProof } from '@iecc/verifier';
+
+const leaf = 'hash_of_certificate';
+const root = 'anchored_merkle_root';
+const proof = ['...']; 
+
+if (verifyMerkleProof(leaf, root, proof)) {
+  console.log("Integrity verified against public log.");
+}
+```
+
 ---
 
 ## Technical Specifications
 
 - **Curve**: Ed25519 (Edwards25519)
-- **Hash Algorithm**: SHA-512 (Internal to EdDSA)
+- **Hash Algorithm**: SHA-512 (Internal to EdDSA), SHA-256 (Merkle)
+- **Batching**: Merkle Tree Binary Proofs
 - **Payload Standard**: JSON-canonicalization-ready
 
 ## Why this exists?
