@@ -1,5 +1,5 @@
-import { MerkleTree } from 'merkletreejs';
 import { sha256 } from '@noble/hashes/sha256';
+import { hexToBytes, bytesToHex } from '@noble/hashes/utils';
 
 /**
  * IECC Merkle Proof Verification
@@ -12,8 +12,18 @@ export function verifyMerkleProof(
   proof: string[]
 ): boolean {
   try {
-    const tree = new MerkleTree([], (m) => sha256(m), { sortPairs: true });
-    return tree.verify(proof, leaf, root);
+    let acc = hexToBytes(leaf.startsWith('0x') ? leaf.slice(2) : leaf);
+    for (const sib of proof) {
+      const s = hexToBytes(sib.startsWith('0x') ? sib.slice(2) : sib);
+      const [a, b] = bytesToHex(acc) <= bytesToHex(s) ? [acc, s] : [s, acc];
+      const merged = new Uint8Array(a.length + b.length);
+      merged.set(a, 0);
+      merged.set(b, a.length);
+      acc = sha256(merged);
+    }
+    const computed = bytesToHex(acc);
+    const expected = (root.startsWith('0x') ? root.slice(2) : root).toLowerCase();
+    return computed.toLowerCase() === expected;
   } catch (err) {
     return false;
   }
@@ -24,7 +34,20 @@ export function verifyMerkleProof(
  * Used for daily anchoring to public platforms (GitHub/X/Nostr).
  */
 export function generateMerkleRoot(hashes: string[]): string {
-  const leaves = hashes.map(h => Buffer.from(h, 'hex'));
-  const tree = new MerkleTree(leaves, (m) => sha256(m), { sortPairs: true });
-  return tree.getHexRoot();
+  if (hashes.length === 0) return '';
+  let level = hashes.map(h => hexToBytes(h.startsWith('0x') ? h.slice(2) : h));
+  while (level.length > 1) {
+    const next: Uint8Array[] = [];
+    for (let i = 0; i < level.length; i += 2) {
+      const left = level[i];
+      const right = level[i + 1] ?? level[i];
+      const [a, b] = bytesToHex(left) <= bytesToHex(right) ? [left, right] : [right, left];
+      const merged = new Uint8Array(a.length + b.length);
+      merged.set(a, 0);
+      merged.set(b, a.length);
+      next.push(sha256(merged));
+    }
+    level = next;
+  }
+  return bytesToHex(level[0]);
 }

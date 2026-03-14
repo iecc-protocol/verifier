@@ -2,7 +2,7 @@
 
 ## Reporting a Vulnerability
 
-The IECC (International Evaluation and Certification Center) takes the security of our cryptographic infrastructure seriously. If you discover a security vulnerability, please do not open a public issue. Instead, send an email to security@iecc.world.
+The IECC Consortium (IECC Network / Independent Credential Infrastructure) takes the security of our cryptographic infrastructure seriously. If you discover a security vulnerability, please do not open a public issue. Instead, send an email to security@iecc.world.
 
 ## Supported Versions
 

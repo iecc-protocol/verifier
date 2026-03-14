@@ -1,8 +1,6 @@
 import * as ed from '@noble/ed25519';
 import { sha512 } from '@noble/hashes/sha512';
-import { verifyMerkleProof, generateMerkleRoot } from './merkle.js';
-import { resolveDID, auditBatch } from './advanced.js';
-import trustedIssuers from '../trusted-issuers.json' assert { type: 'json' };
+import { trustedIssuers } from './trustedIssuers.js';
 import canonize from 'json-canon';
 
 // Required for @noble/ed25519 to work in environments without global crypto
@@ -37,7 +35,8 @@ export async function verifyCredential(
   publicKeyHex: string
 ): Promise<VerificationResult> {
   try {
-    const data = JSON.parse(rawPayload) as CredentialData;
+    const parsed = JSON.parse(rawPayload);
+    const data = parsed as CredentialData;
     
     // Cross-reference with trusted issuers
     const issuerInfo = trustedIssuers.find(i => i.id === data.issuer);
@@ -53,11 +52,13 @@ export async function verifyCredential(
       return { isValid: false, error: 'Public key does not match registered issuer key' };
     }
 
-    const canonicalPayload = typeof rawPayload === 'string' 
-      ? canonize(JSON.parse(rawPayload)) 
-      : canonize(rawPayload);
+    const canonicalPayload = canonize(parsed);
+    const message = new TextEncoder().encode(canonicalPayload);
+    const isValid = await ed.verify(signatureHex, message, publicKeyHex);
 
-    const isValid = await ed.verify(signatureHex, canonicalPayload, publicKeyHex);
+    if (!isValid) {
+      return { isValid: false, error: 'Cryptographic signature mismatch' };
+    }
 
     return {
       isValid: true,
@@ -72,3 +73,6 @@ export async function verifyCredential(
     };
   }
 }
+
+export { verifyMerkleProof, generateMerkleRoot } from './merkle.js';
+export { resolveDID, auditBatch } from './advanced.js';

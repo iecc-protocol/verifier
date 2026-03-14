@@ -1,6 +1,6 @@
-# IECC Community & Ecosystem
+# IECC Network & Consortium
 
-The IECC (International Evaluation and Certification Center) project is built on the principle that professional trust should be open, verifiable, and permanent. We welcome developers, educators, and organizations to join our ecosystem.
+The IECC Network (Independent Credential Infrastructure) and the IECC Consortium are built on the principle that professional trust should be open, verifiable, and permanent. We welcome developers, educators, and organizations to join our ecosystem.
 
 ## How to Contribute
 
