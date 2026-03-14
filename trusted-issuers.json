@@ -1,0 +1,23 @@
+[
+  {
+    "id": "IECC-ORG-001",
+    "name": "Global Tech Academy",
+    "website": "https://academy.example.com",
+    "publicKey": "e2b123f4567890abcdef1234567890abcdef1234567890abcdef1234567890ab",
+    "status": "active"
+  },
+  {
+    "id": "IECC-ORG-002",
+    "name": "Cyber Defense Institute",
+    "website": "https://cdi.example.org",
+    "publicKey": "a3f823f4567890abcdef1234567890abcdef1234567890abcdef1234567890bc",
+    "status": "active"
+  },
+  {
+    "id": "IECC-ORG-999",
+    "name": "Legacy Training Center",
+    "website": "https://legacy.example.net",
+    "publicKey": "deadbeef567890abcdef1234567890abcdef1234567890abcdef1234567890df",
+    "status": "revoked"
+  }
+]

@@ -1,0 +1,17 @@
+# Dependency output
+node_modules/
+dist/
+lib-cov/
+coverage/
+
+# Build artifacts
+*.tsbuildinfo
+.eslintcache
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local

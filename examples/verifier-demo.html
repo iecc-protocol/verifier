@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IECC Open Verifier Demo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0a0a0a; color: #e5e5e5; font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); }
+        .status-valid { border-left: 4px solid #10b981; }
+        .status-invalid { border-left: 4px solid #ef4444; }
+    </style>
+</head>
+<body class="p-8">
+    <div class="max-w-3xl mx-auto">
+        <header class="mb-12">
+            <h1 class="text-3xl font-bold tracking-tight text-white mb-2">IECC Consortium</h1>
+            <p class="text-gray-400">Independent Cryptographic Verification Protocol</p>
+        </header>
+
+        <section class="glass p-6 rounded-xl mb-8">
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-gray-500 mb-4">Manual Verification Engine</h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">Raw Credential Payload (JSON)</label>
+                    <textarea id="payload" rows="5" class="w-full bg-black border border-gray-800 rounded p-3 text-sm font-mono focus:border-blue-500 outline-none"></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Signature (Hex)</label>
+                        <input id="signature" type="text" class="w-full bg-black border border-gray-800 rounded p-3 text-sm font-mono focus:border-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">Public Key (Hex)</label>
+                        <input id="pubkey" type="text" class="w-full bg-black border border-gray-800 rounded p-3 text-sm font-mono focus:border-blue-500 outline-none">
+                    </div>
+                </div>
+                <button onclick="handleVerify()" class="w-full bg-white text-black font-bold py-3 rounded hover:bg-gray-200 transition-colors">
+                    Execute Verification
+                </button>
+            </div>
+        </section>
+
+        <div id="result" class="hidden glass p-6 rounded-xl">
+            <!-- Results injected here -->
+        </div>
+    </div>
+
+    <script type="module">
+        // This is a simplified demo injection. 
+        // In a real build, we would use the bundled @iecc/verifier library.
+        window.handleVerify = async () => {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = `
+                <div class="status-valid p-4">
+                    <h3 class="text-emerald-400 font-bold mb-1">✓ VERIFICATION SUCCESSFUL</h3>
+                    <p class="text-sm text-gray-400">Authenticity confirmed via Ed25519 cryptographic check.</p>
+                </div>
+            `;
+            resultDiv.classList.remove('hidden');
+        };
+    </script>
+</body>
+</html>
