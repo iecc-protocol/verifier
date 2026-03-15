@@ -2,38 +2,47 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Cryptographic Standard: Ed25519](https://img.shields.io/badge/Security-Ed25519-blue.svg)](#technical-specifications)
-[![Audit: Open Source](https://img.shields.io/badge/Audit-Public-success.svg)](#why-this-exists)
- 
-The IECC Verifier is a lightweight, client-side cryptographic tool designed to validate **digital credentials**, **professional certificates**, and **verifiable achievements** issued through the [IECC Network](https://iecc.world) (**Independent Credential Infrastructure**) and maintained by the [IECC Consortium](https://iecc.world).
+[![AI-Ready: MCP](https://img.shields.io/badge/AI--Ready-MCP-success.svg)](#ai--agent-integration)
+[![NPM Version](https://img.shields.io/npm/v/@iecc/verifier.svg)](https://www.npmjs.com/package/@iecc/verifier)
 
-This repository intentionally open-sources **verification only** (public audit / public trust). Issuance, rate-limits, risk controls, and private key operations remain server-side.
+The IECC Verifier is an industrial-grade cryptographic toolkit designed to validate **digital credentials**, **AI-generated content**, and **verifiable achievements** issued through the [IECC Network](https://iecc.world).
 
-## Key Use Cases
+---
 
-- **Employment Verification**: Instantly validate candidate certifications without manual background checks.
-- **Academic Integrity**: Secure digital diplomas that are immune to PDF manipulation.
-- **Skill Badges**: Cryptographically-signed badges for open-source contributors and technical professionals.
-- **Compliance Auditing**: Automated verification of regulatory licenses and mandatory training.
+## 🏗 System Architecture
 
-## Overview
+```mermaid
+graph TD
+    Root[IECC Root Key] -->|Signs| Reg[Issuer Registry]
+    Reg -->|Authorized| Issuer[Issuer Authority]
+    Issuer -->|Signs Payload| B[Digital Credential]
+    B --> C[Holder / AI Agent]
+    C -->|Presents| D[Verifier Library / MCP]
+    D -->|1. Canonicalize| E[Trust Engine]
+    D -->|2. Verify Chain| E
+    D -->|3. AI Proof Check| E
+    E -->|Valid / Invalid| F[Relying Party]
+```
 
-In an era of digital forgery, static PDFs are no longer sufficient for professional certification. IECC implements a "Trust-by-Design" architecture where every credential carries a unique cryptographic fingerprint. This repository contains the reference implementation for verifying these signatures.
+## 🚀 Frontier AI Features
 
-## Key Features
+- **Model Context Protocol (MCP)**: Native support for AI Agents (Claude/ChatGPT). Deploy as `stdio` for local tools or `HTTP` for cloud services.
+- **Verifiable AI Inference**: Cryptographic proof that content originated from a specific certified AI model (e.g., DeepSeek, GPT-4), preventing "human-in-the-loop" spoofing.
+- **Visual Audit Skill (Vision)**: Multi-modal agents can "read" certificates via OCR and verify embedded trust anchors in real-time.
+- **WASM-Optimized**: High-performance, private verification in Browser, Edge, and TEE (Trusted Execution Environments).
 
-- **Zero-Knowledge Verification**: Validate credentials without accessing central databases.
-- **Ed25519 Signature Scheme**: Industry-standard Edwards-curve Digital Signature Algorithm for high security and performance.
-- **Merkle Tree Anchoring**: Support for batch verification and proof-of-existence against public immutable logs.
-- **SHA-256 Integrity**: Ensures the certificate content hasn't been tampered with.
-- **Portable & Lightweight**: No heavy dependencies, runs in any modern browser or Node.js environment.
+---
 
-## How it Works
+## 🛠 Key Features
 
-1. **Hashing**: The verifier computes the SHA-256 hash of the credential data.
-2. **Signature Check**: It uses the IECC Public Key to verify the Ed25519 signature against the computed hash.
-3. **Audit Trail**: Returns the timestamp and issuer metadata embedded in the signature packet.
+- **Zero-Knowledge Architecture**: Validate credentials without calling a central database, ensuring maximum privacy and GDPR compliance.
+- **Deterministic Trust**: Built on **Ed25519** and **JSON Canonicalization (RFC 8785)** for consistent, tamper-proof verification.
+- **Dynamic Registry**: Load and verify the trusted issuer list via the **IECC Root Trust Anchor**, supporting real-time revocation.
+- **Merkle Tree Batching**: High-throughput verification for bulk-issued credentials.
 
-## Integration Guide
+---
+
+## 📦 Integration Guide
 
 ### 1. Installation
 ```bash
@@ -41,56 +50,91 @@ npm install @iecc/verifier
 ```
 
 ### 2. Basic Verification
-Ensure you have the raw payload (exactly as issued), the hex signature, and the issuer's public key.
-
 ```typescript
 import { verifyCredential } from '@iecc/verifier';
-
-const payload = '{"id":"CERT-123","issuer":"IECC-ORG-1",...}';
-const signature = 'a3f8...';
-const publicKey = 'e2b1...';
 
 const { isValid, data, error } = await verifyCredential(payload, signature, publicKey);
 
 if (isValid) {
-  console.log(`Verified achievement: ${data.claims.achievement}`);
-} else {
-  console.error(`Trust Failure: ${error}`);
+  console.log(`Verified subject: ${data.subject}`);
 }
 ```
 
-### 3. Command Line Interface (CLI)
-For dev-ops and batch auditing:
-```bash
-npx iecc-verify ./cert.json <signature> <pubkey>
-```
-
-### 4. Merkle Proof Verification (High-Trust)
-For enterprise auditing of batch-issued certificates.
-
+### 3. Dynamic Registry & Root Trust (Production)
 ```typescript
-import { verifyMerkleProof } from '@iecc/verifier';
+import { loadIssuerRegistryFromUrl, verifyCredentialWithIssuers } from '@iecc/verifier';
 
-const leaf = 'hash_of_certificate';
-const root = 'anchored_merkle_root';
-const proof = ['...']; 
+// Load the official IECC signed issuer list
+const { issuers, verify } = await loadIssuerRegistryFromUrl('https://registry.iecc.world/issuers.signed.json');
+if (!verify.isValid) throw new Error("Registry trust failure");
 
-if (verifyMerkleProof(leaf, root, proof)) {
-  console.log("Integrity verified against public log.");
-}
+const result = await verifyCredentialWithIssuers(payload, signature, publicKey, issuers);
+```
+
+### 4. Verifiable AI Inference
+```typescript
+import { verifyAIInference } from '@iecc/verifier';
+
+const result = await verifyAIInference(content, aiProof);
+console.log(`AI Model: ${result.modelId}, Integrity: ${result.isValid}`);
 ```
 
 ---
 
-## Technical Specifications
+## 🤖 MCP Server Deployment
 
-- **Curve**: Ed25519 (Edwards25519)
-- **Hash Algorithm**: SHA-512 (Internal to EdDSA), SHA-256 (Merkle)
-- **Batching**: Merkle Tree Binary Proofs
-- **Payload Standard**: JSON-canonicalization-ready
+The IECC Verifier provides a powerful MCP server to empower AI Agents.
 
-## Why this exists?
+### Mode A: Local (Claude Desktop)
+Add to your config:
+```json
+"iecc-verifier": {
+  "command": "node",
+  "args": ["/path/to/mcp-server/dist/index.js", "--stdio"]
+}
+```
 
-Most "digital certificates" are just entries in a private database. If the company goes bust, the certificate is worthless. **IECC** changes the paradigm: we provide the infrastructure to issue credentials, but the **proof** belongs to the individual. By open-sourcing this verifier, we ensure that any third party (employers, governments, universities) can independently verify a credential without ever talking to our servers.
+### Mode B: Cloud (HTTP Service)
+Perfect for Docker/Kubernetes deployments:
+```bash
+node dist/index.js --port 3000
+```
+- **Endpoint**: `POST http://localhost:3000/mcp`
+- **Security**: Includes built-in DNS rebinding protection.
 
-Trust is built on transparency, not proprietary algorithms.
+---
+
+## 🛠 Developer Workflow
+
+### Monorepo Setup
+```bash
+# Install all deps (root)
+npm install
+# Build library & MCP server
+npm run build:all
+# Run tests
+npm test
+```
+
+### Packaging Check
+```bash
+npm run pack:check
+```
+
+---
+
+## 📜 Technical Specifications
+
+- **Curve**: Ed25519 (RFC 8032)
+- **Hashing**: SHA-256 (Merkle), SHA-512 (EdDSA)
+- **Payload**: JSON Canonicalization Scheme (RFC 8785)
+- **Trust Anchor**: IECC Root Public Key (Hardcoded in `registry.ts`)
+
+---
+
+## 🌍 Why this exists?
+
+Most digital certificates are just rows in a private database. If the issuer disappears, the certificate dies. **IECC** flips the script: the **proof** belongs to the individual. By open-sourcing the verifier, we ensure that trust is built on math and transparency, not proprietary APIs.
+
+---
+© 2026 IECC Network. Independent. Immutable. Verifiable.
