@@ -1,0 +1,75 @@
+{
+  "name": "@iecc/verifier",
+  "version": "1.1.0",
+  "description": "Open source verification logic for IECC digital credentials",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup src/index.ts src/cli.ts src/advanced.ts src/merkle.ts --format cjs,esm --dts",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "security-audit": "npm audit",
+    "bench": "node --loader ts-node/esm src/benchmark.ts"
+  },
+  "keywords": [
+    "credential",
+    "verification",
+    "cryptography",
+    "ed25519",
+    "iecc",
+    "trust",
+    "zero-knowledge",
+    "decentralized"
+  ],
+  "author": "IECC Consortium",
+  "license": "MIT",
+  "bin": {
+    "iecc-verify": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    },
+    "./merkle": {
+      "types": "./dist/merkle.d.ts",
+      "import": "./dist/merkle.mjs",
+      "require": "./dist/merkle.js"
+    },
+    "./advanced": {
+      "types": "./dist/advanced.d.ts",
+      "import": "./dist/advanced.mjs",
+      "require": "./dist/advanced.js"
+    }
+  },
+  "dependencies": {
+    "@noble/ed25519": "^2.0.0",
+    "@noble/hashes": "^1.3.3",
+    "json-canon": "^1.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.50.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iecc-protocol/verifier"
+  },
+  "bugs": {
+    "url": "https://github.com/iecc-protocol/verifier/issues"
+  },
+  "homepage": "https://github.com/iecc-protocol/verifier"
+}
