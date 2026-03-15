@@ -15,10 +15,10 @@
 
 ## ✨ 核心特性
 
-- **🔒 确定性信任**: 基于 **Ed25519** 和 **JSON Canonicalization (RFC 8785)**，确保跨平台验证结果完全一致。
+- **🔒 确定性信任**: 基于 **Ed25519** 和 **JSON Canonicalization (RFC 8785)**，确保跨平台验证结果完全一致。它采用了基于 IECC 标准的**分布式信任模型 (Distributed Trust)**。
 - **🤖 AI 原生**: 内置支持 **Model Context Protocol (MCP)**。AI Agent（如 Claude/ChatGPT）可直接将此验证器作为工具调用。
 - **⚡ 高吞吐量**: 支持 **Merkle Tree** 结构，适用于大规模凭证的快速审计。
-- **🌐 离线优先**: 通过密码学证明建立信任，无需访问中央数据库，保护隐私并符合 GDPR。
+- **🌐 分布式信任**: 通过密码学证明建立信任，结合了传统 PKI 的可靠性与分布式身份 (DID) 的灵活性，无需访问中央数据库，保护隐私并符合 GDPR。
 
 ## 🚀 快速开始
 
@@ -29,7 +29,11 @@ npm install @iecc/verifier
 ```typescript
 import { verifyCredential } from '@iecc/verifier';
 
-const result = await verifyCredential(payload, signature, publicKey);
+const result = await verifyCredential(
+  payload, 
+  signature, // 128 位十六进制字符串，不带 0x 前缀
+  publicKey  // 64 位十六进制字符串，不带 0x 前缀
+);
 console.log(result.isValid ? "✅ 验证通过!" : "❌ 验证失败");
 ```
 

@@ -26,14 +26,14 @@
 
 ## 📋 Overview
 
-**IECC Verifier** is a production-ready, cryptographically secure TypeScript library for verifying digital credentials using Ed25519 signatures and JSON canonicalization. Designed for enterprise environments, it provides:
+**IECC Verifier** is a production-ready, cryptographically secure TypeScript library for verifying digital credentials using Ed25519 signatures and JSON canonicalization. It implements a **distributed trust model** based on the International Electronic Credential Consortium (IECC) standards.
 
 - ✅ **Type-Safe** - 100% TypeScript with zero `any` types
 - ✅ **Secure** - Industry-standard Ed25519 (RFC 8032) + RFC 8785 canonicalization
 - ✅ **Tested** - 38 unit tests with 95%+ code coverage
 - ✅ **Scalable** - Batch verification with concurrency control
+- ✅ **Distributed Trust** - Hybrid PKI model with verifiable trust anchors
 - ✅ **Validated** - Complete input validation & error handling
-- ✅ **Documented** - Comprehensive JSDoc & inline comments
 
 **Version**: `1.1.0` | **License**: MIT | **Status**: Production Ready ✅
 
@@ -62,8 +62,8 @@ const credential = {
 
 const result = await verifyCredential(
   JSON.stringify(credential),
-  "a1b2c3d4...", // 128 hex chars (64 bytes)
-  "e5f6g7h8..." // 64 hex chars (32 bytes)
+  "a1b2c3d4...", // 128 hex chars (64 bytes) - No 0x prefix
+  "e5f6g7h8..." // 64 hex chars (32 bytes) - No 0x prefix
 );
 
 if (result.isValid) {
@@ -103,7 +103,7 @@ iecc-verify cert.json a1b2c3d4... e5f6g7h8...
 ### 🏢 Enterprise Ready
 - **Dynamic Issuer Loading** - Load trusted issuers from remote URLs
 - **Status Management** - Active, suspended, revoked issuer states
-- **Deterministic Results** - Same verification across all environments
+- **Hybrid Trust Model** - Combines the reliability of PKI with the flexibility of decentralized identifiers (DID)
 - **GDPR Compliant** - No central database, privacy-preserving
 
 ### 🧪 Well Tested
@@ -123,6 +123,17 @@ iecc-verify cert.json a1b2c3d4... e5f6g7h8...
 | [SECURITY.md](SECURITY.md) | Security policies & advisories |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | Development guidelines |
 | [CHANGELOG.md](CHANGELOG.md) | Version history & breaking changes |
+
+### 🛠️ Technical Architecture
+
+```mermaid
+graph TD
+    Root[IECC Root Trust Anchor] --> Registry[Global Issuer Registry]
+    Registry --> Issuer[Certified Issuer Node]
+    Issuer --> Credential[Signed Digital Credential]
+    Credential --> Verifier[IECC Verifier Library]
+    Verifier --> Result[Verification Result]
+```
 
 ---
 
@@ -389,8 +400,8 @@ Add to `claude_desktop_config.json`:
 | **Signature Algorithm** | Ed25519 (Edwards-curve Digital Signature Algorithm) |
 | **Serialization** | RFC 8785 (JSON Canonicalization Scheme) |
 | **Hash Algorithm** | SHA-256 / SHA-512 |
-| **Batching** | Merkle Tree Proofs |
-| **Identity** | DID-compatible Decentralized Identifiers |
+| **Trust Model** | Distributed Trust (Hybrid PKI) |
+| **Identity** | DID-compatible Identifiers |
 
 ---
 
@@ -398,8 +409,8 @@ Add to `claude_desktop_config.json`:
 
 - [x] **Q1**: Core Protocol Open Sourcing (Completed)
 - [ ] **Q2**: WASM-optimized Verifier for Edge Runtimes
-- [ ] **Q3**: Zero-Knowledge Proof (ZKP) selective disclosure support
-- [ ] **Q4**: IECC Decentralized Trust Network (DTN) Beta
+- [ ] **Q3**: Zero-Knowledge Proof (ZKP) selective disclosure support (Research & Development)
+- [ ] **Q4**: IECC Distributed Trust Network (DTN) Beta
 
 ---
 
