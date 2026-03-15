@@ -87,7 +87,7 @@ iecc-verify cert.json a1b2c3d4... e5f6g7h8...
 
 ## 🎯 Key Features
 
-### � Security First
+### 🔒 Security First
 - **Ed25519 Signatures** - RFC 8032 standard implementation
 - **JSON Canonicalization** - RFC 8785 deterministic ordering
 - **Input Validation** - File size limits, path traversal protection
