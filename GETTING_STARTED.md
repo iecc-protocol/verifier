@@ -1,52 +1,52 @@
 # Getting Started with IECC Verifier
 
 **Version**: 1.1.0  
-**Last Updated**: 2026年3月15日
+**Last Updated**: March 15, 2026
 
 ---
 
-## 📖 目录
+## 📖 Table of Contents
 
-1. [安装](#installation)
-2. [基础使用](#basic-usage)
-3. [验证凭证](#verifying-credentials)
-4. [高级功能](#advanced-features)
-5. [常见问题](#faq)
-6. [故障排除](#troubleshooting)
+1. [Installation](#installation)
+2. [Basic Usage](#basic-usage)
+3. [Verifying Credentials](#verifying-credentials)
+4. [Advanced Features](#advanced-features)
+5. [FAQ](#faq)
+6. [Troubleshooting](#troubleshooting)
 
 ---
 
 ## Installation
 
-### 系统要求
+### System Requirements
 
-- **Node.js**: 18.0.0 或更高版本
-- **npm**: 8.0.0 或更高版本
-- **TypeScript**: 5.0.0 或更高版本（如果使用 TypeScript）
+- **Node.js**: 18.0.0 or higher
+- **npm**: 8.0.0 or higher
+- **TypeScript**: 5.0.0 or higher (if using TypeScript)
 
-### 安装步骤
+### Installation Steps
 
 ```bash
-# 1. 通过 NPM 安装
+# 1. Install via NPM
 npm install @iecc/verifier@1.1.0
 
-# 2. 验证安装
+# 2. Verify Installation
 npm list @iecc/verifier
 # @iecc/verifier@1.1.0
 
-# 3. 检查 CLI 工具
+# 3. Check CLI Tool
 npx iecc-verify --help
 ```
 
-### 配置
+### Configuration
 
-创建 `.env` 文件（可选）：
+Create a `.env` file (optional):
 
 ```env
-# 设置根公钥
+# Set Root Public Key
 IECC_ROOT_PUBLIC_KEY=your-root-pubkey-here
 
-# CLI 默认超时（毫秒）
+# CLI Default Timeout (ms)
 IECC_CLI_TIMEOUT=5000
 ```
 
@@ -54,7 +54,7 @@ IECC_CLI_TIMEOUT=5000
 
 ## Basic Usage
 
-### JavaScript 方式
+### JavaScript Usage
 
 ```javascript
 const { verifyCredential } = require('@iecc/verifier');
@@ -70,8 +70,8 @@ async function verify() {
 
   const result = await verifyCredential(
     JSON.stringify(credential),
-    "a1b2c3...", // 签名 (128 hex 字符)
-    "d4e5f6..."  // 公钥 (64 hex 字符)
+    "a1b2c3...", // Signature (128 hex characters)
+    "d4e5f6..."  // Public Key (64 hex characters)
   );
 
   console.log(result);
@@ -86,7 +86,7 @@ async function verify() {
 verify().catch(console.error);
 ```
 
-### TypeScript 方式
+### TypeScript Usage
 
 ```typescript
 import { verifyCredential, type VerificationResult } from '@iecc/verifier';
@@ -111,7 +111,7 @@ async function verifyCertificate(
   );
 }
 
-// 使用
+// Usage
 const cert: Certificate = {
   id: "CERT-001",
   issuer: "IECC-ORG-001",
@@ -122,9 +122,9 @@ const cert: Certificate = {
 
 const result = await verifyCertificate(cert, sig, key);
 if (result.isValid) {
-  console.log(`✅ 验证成功: ${result.issuer}`);
+  console.log(`✅ Verification Success: ${result.issuer}`);
 } else {
-  console.log(`❌ 验证失败: ${result.error}`);
+  console.log(`❌ Verification Failed: ${result.error}`);
 }
 ```
 
@@ -132,32 +132,32 @@ if (result.isValid) {
 
 ## Verifying Credentials
 
-### 凭证格式
+### Credential Format
 
-凭证必须符合以下格式：
+Credentials must comply with the following format:
 
 ```typescript
 interface CredentialData {
-  id: string;                    // 唯一标识符
-  issuer: string;                // 颁发者ID
-  subject: string;               // 主体（持证人）
-  claims: Record<string, unknown>; // 声明数据
-  issuedAt: number;              // 颁发时间戳
+  id: string;                    // Unique identifier
+  issuer: string;                // Issuer ID
+  subject: string;               // Subject (holder)
+  claims: Record<string, unknown>; // Claim data
+  issuedAt: number;              // Issuance timestamp
 }
 ```
 
-### 签名格式
+### Signature Format
 
-- **签名格式**: 128 个十六进制字符（64 字节 Ed25519 签名）。**请注意：** 不要包含 `0x` 前缀。
-- **公钥格式**: 64 个十六进制字符（32 字节 Ed25519 公钥）。**请注意：** 不要包含 `0x` 前缀。
+- **Signature Format**: 128 hex characters (64-byte Ed25519 signature). **Note:** Do not include the `0x` prefix.
+- **Public Key Format**: 64 hex characters (32-byte Ed25519 public key). **Note:** Do not include the `0x` prefix.
 
-### 示例：完整验证流程
+### Example: Full Verification Flow
 
 ```typescript
 import { verifyCredential, getTrustedIssuers } from '@iecc/verifier';
 
 async function fullVerificationFlow() {
-  // 1. 准备凭证
+  // 1. Prepare credential
   const credential = {
     id: "CERT-2024-001",
     issuer: "IECC-ORG-001",
@@ -174,34 +174,34 @@ async function fullVerificationFlow() {
   const signature = "a1b2c3d4e5f6..."; // 128 hex chars
   const publicKey = "d4e5f6g7h8...";   // 64 hex chars
 
-  // 2. 验证签名
+  // 2. Verify signature
   const result = await verifyCredential(payload, signature, publicKey);
 
-  // 3. 检查结果
+  // 3. Check results
   if (!result.isValid) {
-    console.error(`❌ 验证失败: ${result.error}`);
+    console.error(`❌ Verification Failed: ${result.error}`);
     return null;
   }
 
-  // 4. 检查颁发者是否被信任
+  // 4. Check if issuer is trusted
   const trustedIssuers = getTrustedIssuers();
   const issuerInfo = trustedIssuers.find(i => i.id === result.issuer);
   
   if (!issuerInfo) {
-    console.error("❌ 颁发者未被信任");
+    console.error("❌ Issuer is not trusted");
     return null;
   }
 
   if (issuerInfo.status === 'revoked') {
-    console.error("❌ 颁发者已被撤销");
+    console.error("❌ Issuer has been revoked");
     return null;
   }
 
-  // 5. 成功！
-  console.log(`✅ 凭证已验证`);
-  console.log(`   颁发者: ${result.issuer}`);
-  console.log(`   主体: ${result.data?.subject}`);
-  console.log(`   时间: ${new Date(result.timestamp!)}`);
+  // 5. Success!
+  console.log(`✅ Credential Verified`);
+  console.log(`   Issuer: ${result.issuer}`);
+  console.log(`   Subject: ${result.data?.subject}`);
+  console.log(`   Time: ${new Date(result.timestamp!)}`);
 
   return result.data;
 }
@@ -211,7 +211,7 @@ async function fullVerificationFlow() {
 
 ## Advanced Features
 
-### 1. 批量验证
+### 1. Batch Verification
 
 ```typescript
 import { auditBatch, verifyCredential } from '@iecc/verifier';
@@ -228,17 +228,17 @@ async function batchVerify() {
     credentials.map(c => JSON.stringify(c)),
     ["sig1", "sig2", "sig3"],
     ["key1", "key1", "key2"],
-    { concurrency: 5 }  // 最多同时5个
+    { concurrency: 5 }  // Up to 5 concurrent
   );
 
   const validCount = results.filter(r => r.isValid).length;
-  console.log(`验证完成: ${validCount}/${results.length} 成功`);
+  console.log(`Verification completed: ${validCount}/${results.length} success`);
 
   return results;
 }
 ```
 
-### 2. 动态加载颁发者
+### 2. Dynamic Loading of Issuers
 
 ```typescript
 import { 
@@ -247,20 +247,20 @@ import {
   setTrustedIssuer 
 } from '@iecc/verifier';
 
-// 从远程 URL 加载
+// Load from remote URL
 async function loadIssuers() {
   try {
     const issuers = await loadTrustedIssuers(
       'https://registry.iecc.world/issuers.json',
       { timeout: 5000 }
     );
-    console.log(`✅ 加载了 ${issuers.length} 个颁发者`);
+    console.log(`✅ Loaded ${issuers.length} issuers`);
   } catch (err) {
-    console.error(`❌ 加载失败: ${err}`);
+    console.error(`❌ Load failed: ${err}`);
   }
 }
 
-// 添加自定义颁发者（测试用）
+// Add custom issuer (for testing)
 function addCustomIssuer() {
   setTrustedIssuer({
     id: 'TEST-ORG-001',
@@ -271,7 +271,7 @@ function addCustomIssuer() {
   });
 }
 
-// 列出所有颁发者
+// List all issuers
 function listIssuers() {
   const issuers = getTrustedIssuers();
   issuers.forEach(issuer => {
@@ -280,12 +280,12 @@ function listIssuers() {
 }
 ```
 
-### 3. Merkle 树验证
+### 3. Merkle Tree Verification
 
 ```typescript
 import { verifyMerkleProof, generateMerkleRoot } from '@iecc/verifier';
 
-// 生成 Merkle 根
+// Generate Merkle Root
 function createMerkleRoot() {
   const hashes = [
     'a'.repeat(64),
@@ -294,22 +294,22 @@ function createMerkleRoot() {
   ];
 
   const root = generateMerkleRoot(hashes);
-  console.log(`根哈希: ${root}`);
+  console.log(`Root Hash: ${root}`);
   return root;
 }
 
-// 验证 Merkle 证明
+// Verify Merkle Proof
 function verifyProof() {
   const leaf = 'a'.repeat(64);
-  const root = 'xyz...'; // Merkle 根
-  const proof = ['p1', 'p2', 'p3']; // 证明路径
+  const root = 'xyz...'; // Merkle Root
+  const proof = ['p1', 'p2', 'p3']; // Proof path
 
   const result = verifyMerkleProof(leaf, root, proof);
   
   if (result.isValid) {
-    console.log("✅ Merkle 证明有效");
+    console.log("✅ Merkle proof is valid");
   } else {
-    console.log(`❌ 验证失败: ${result.error}`);
+    console.log(`❌ Verification failed: ${result.error}`);
   }
 }
 ```
@@ -318,17 +318,17 @@ function verifyProof() {
 
 ## CLI Tool
 
-### 基本用法
+### Basic Usage
 
 ```bash
-# 验证单个凭证文件
+# Verify a single credential file
 iecc-verify credential.json signature_hex public_key_hex
 
-# 例子
+# Example
 iecc-verify cert.json a1b2c3d4... d4e5f6g7...
 ```
 
-### 输出
+### Output
 
 ```
 ✓ Credential Verified
@@ -338,18 +338,18 @@ Issued At: 2026/3/15 10:30:45
 Subject:   John Doe
 ```
 
-### 错误处理
+### Error Handling
 
 ```bash
-# 文件不存在
+# File does not exist
 $ iecc-verify missing.json sig key
 Error: File not found at /path/to/missing.json
 
-# 无效的签名格式
+# Invalid signature format
 $ iecc-verify cert.json invalid_sig key
 Error: Invalid signature format: must be 128 hex characters (64 bytes)
 
-# 验证失败
+# Verification failed
 $ iecc-verify cert.json sig key
 ✗ Verification Failed
 Reason: Cryptographic signature mismatch
@@ -359,11 +359,11 @@ Reason: Cryptographic signature mismatch
 
 ## FAQ
 
-### Q: 签名格式是什么？
-**A**: Ed25519 签名（64 字节）表示为 128 个十六进制字符。不建议使用 `0x` 前缀，以保持与 Ed25519 标准编码的一致性。
+### Q: What is the signature format?
+**A**: Ed25519 signature (64 bytes) represented as 128 hex characters. We recommend not using the `0x` prefix to maintain consistency with Ed25519 standard encoding.
 
-### Q: 如何生成 Ed25519 密钥对？
-**A**: 使用 `@noble/ed25519`:
+### Q: How to generate an Ed25519 key pair?
+**A**: Using `@noble/ed25519`:
 ```typescript
 import * as ed from '@noble/ed25519';
 
@@ -371,38 +371,38 @@ const privateKey = ed.utils.randomPrivateKey();
 const publicKey = await ed.getPublicKey(privateKey);
 ```
 
-### Q: 支持哪些 Node.js 版本？
-**A**: 18.0.0 或更高。推荐使用最新的 LTS 版本。
+### Q: Which Node.js versions are supported?
+**A**: 18.0.0 or higher. Using the latest LTS version is recommended.
 
-### Q: 凭证大小有限制吗？
-**A**: 是的，最大 10MB。这是为了防止内存溢出攻击。
+### Q: Is there a limit on credential size?
+**A**: Yes, maximum 10MB. This is to prevent memory overflow attacks.
 
-### Q: 支持浏览器使用吗？
-**A**: 支持。可以通过 bundler（webpack、vite）使用。推荐使用 ESM 版本。
+### Q: Is browser usage supported?
+**A**: Yes. It can be used via bundlers (webpack, vite). The ESM version is recommended.
 
-### Q: 如何处理离线验证？
-**A**: 预先加载颁发者列表，然后离线验证。不需要网络连接。
+### Q: How to handle offline verification?
+**A**: Pre-load the issuer list, then verify offline. No network connection is required.
 
-### Q: GDPR 兼容吗？
-**A**: 是的。不存储中央数据库，完全点对点验证。
+### Q: Is it GDPR compliant?
+**A**: Yes. No central database is stored, completely peer-to-peer verification.
 
 ---
 
 ## Troubleshooting
 
-### 问题 1: "Issuer not found"
+### Issue 1: "Issuer not found"
 
 ```
 ❌ Verification Failed
 Reason: Unknown or untrusted issuer ID
 ```
 
-**解决方案**:
+**Solution**:
 ```typescript
-// 加载最新的颁发者列表
+// Load the latest issuer list
 await loadTrustedIssuers('https://registry.example.com/issuers.json');
 
-// 或手动添加
+// Or add manually
 setTrustedIssuer({
   id: 'IECC-ORG-001',
   name: 'Example Org',
@@ -412,49 +412,49 @@ setTrustedIssuer({
 });
 ```
 
-### 问题 2: "Cryptographic signature mismatch"
+### Issue 2: "Cryptographic signature mismatch"
 
-**原因**: 签名无效或公钥不匹配
+**Cause**: Invalid signature or public key mismatch
 
-**解决方案**:
-1. 检查签名格式（128 个十六进制字符）
-2. 检查公钥格式（64 个十六进制字符）
-3. 确保使用了正确的公钥
-4. 验证凭证 JSON 是否被修改
+**Solution**:
+1. Check signature format (128 hex characters)
+2. Check public key format (64 hex characters)
+3. Ensure the correct public key is used
+4. Verify the credential JSON has not been modified
 
-### 问题 3: "Invalid JSON nesting depth"
+### Issue 3: "Invalid JSON nesting depth"
 
-**原因**: JSON 嵌套深度超过限制（最多 10 层）
+**Cause**: JSON nesting depth exceeds limit (max 10 layers)
 
-**解决方案**:
+**Solution**:
 ```typescript
-// 简化你的凭证结构
-// ❌ 太深
+// Simplify your credential structure
+// ❌ Too deep
 {
   level1: { level2: { level3: { ... } } }
 }
 
-// ✅ 扁平结构
+// ✅ Flat structure
 {
   data: { key: value }
 }
 ```
 
-### 问题 4: "File too large"
+### Issue 4: "File too large"
 
-**原因**: 凭证文件超过 10MB
+**Cause**: Credential file exceeds 10MB
 
-**解决方案**: 分割大文件，批量处理
-
----
-
-## 下一步
-
-- 📖 查看 [API 参考](./README.md#-api-reference)
-- 🧪 运行测试: `npm test`
-- 🛠️ 贡献代码: 查看 [CONTRIBUTING.md](./CONTRIBUTING.md)
-- 🔐 安全政策: 查看 [SECURITY.md](./SECURITY.md)
+**Solution**: Split large files or use batch processing
 
 ---
 
-**需要帮助?** 提交问题到 [GitHub Issues](https://github.com/iecc-protocol/verifier/issues)
+## Next Steps
+
+- 📖 Check the [API Reference](./README.md#-api-reference)
+- 🧪 Run Tests: `npm test`
+- 🛠️ Contribute: See [CONTRIBUTING.md](./CONTRIBUTING.md)
+- 🔐 Security Policy: See [SECURITY.md](./SECURITY.md)
+
+---
+
+**Need help?** Submit an issue to [GitHub Issues](https://github.com/iecc-protocol/verifier/issues)
