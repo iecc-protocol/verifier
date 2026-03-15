@@ -6,19 +6,20 @@
 
 **IECC (International Electronic Credential Consortium)** Official TypeScript Verification Library.
 
-An independent credential verification protocol designed for the **AI Era**, supporting Ed25519 signatures, RFC 8785 canonicalization, and offline-first verification.
+---
+
+[English](README.md) | [简体中文](README.zh-CN.md) | [繁體中文](README.zh-TW.md) | [Français](README.fr.md) | [Español](README.es.md) | [Deutsch](README.de.md) | [日本語](README.ja.md) | [العربية](README.ar.md)
 
 ---
+
+An independent credential verification protocol designed for the **AI Era**, supporting Ed25519 signatures, RFC 8785 canonicalization, and offline-first verification.
 
 ## Key Features
 
-- **Deterministic Trust**: Built on **Ed25519** and **JSON Canonicalization (RFC 8785)** for consistent, tamper-proof verification across all platforms (Node/Browser/Edge).
-- **AI-Native**: Built-in support for the **Model Context Protocol (MCP)**. AI Agents (e.g., Claude/ChatGPT) can directly invoke this verifier as a tool.
-- **High-Throughput**: Supports **Merkle Tree** structures for rapid auditing of bulk-issued credentials.
-- **Offline-First**: No central database access required. Trust is established purely via cryptographic proofs, ensuring privacy and GDPR compliance.
-- **Lightweight**: Zero-bloat dependencies, optimized for WASM and Edge runtimes.
-
----
+- **Deterministic Trust**: Built on **Ed25519** and **JSON Canonicalization (RFC 8785)** for consistent verification across all platforms.
+- **AI-Native**: Built-in support for the **Model Context Protocol (MCP)**.
+- **High-Throughput**: Supports **Merkle Tree** structures for bulk auditing.
+- **Offline-First**: Trust is established via cryptographic proofs, no central database required.
 
 ## System Architecture
 
@@ -34,8 +35,6 @@ graph TD
     D -->|3. AI Proof Check| E
     E -->|Valid / Invalid| F[Relying Party]
 ```
-
----
 
 ## Quick Start
 
